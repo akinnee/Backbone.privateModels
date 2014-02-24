@@ -6,6 +6,11 @@ module.exports = function(grunt) {
      * Actually run the tests
      */
     run: {
+      src: [
+        'modelStore.js',
+        'getModel.js',
+        'getCollection.js'
+      ],
       options: {
         specs: 'tests/**/*_spec.js',
         host: 'http://localhost:8090',

@@ -16,6 +16,7 @@ define(function(require) {
 	var getModel = function(attrs, options, ModelToUse) {
 
 		var model, id, modelFound;
+		attrs = attrs ? attrs : {};
 
 		/**
 		 * If the model is already in our model store, or a model was passed in, we'll use it

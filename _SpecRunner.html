@@ -64,6 +64,15 @@
     function launchTest() {
     require([
       
+        
+        'modelStore' ,
+      
+        
+        'getModel' ,
+      
+        
+        'getCollection' 
+      
     ],
     function(){
       require(['tests/getCollection_spec.js','tests/getModel_spec.js','tests/modelStore_spec.js','.grunt/grunt-contrib-jasmine/reporter.js'], function(){

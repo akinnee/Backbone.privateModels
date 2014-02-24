@@ -8,14 +8,18 @@ define(function(require) {
 
 		var Collection = CollectionToUse.extend({
 			_prepareModel: function(attrs, options) {
+				var model;
 				if (typeof attrs.execute === 'function') {
 					if (!attrs.collection) attrs.collection = this;
 					return attrs;
+				} else if (attrs instanceof Backbone.Model) {
+					if (!attrs.collection) attrs.collection = this;
+					model = getModel(attrs);
+					return model;
 				}
 				options = options ? _.clone(options) : {};
 				options.collection = this;
-				var model = new this.model(attrs, options);
-				model = getModel(model);
+				model = getModel(attrs, options, this.model);
 				if (!model.validationError) return model;
 				this.trigger('invalid', this, model.validationError, options);
 				return false;
