@@ -57,7 +57,7 @@ define(function(require) {
 				availableActions: _.clone(model.availableActions),
 				/**
 				 * Similar to Marionette.commands
-				 * An model level command execution system.
+				 * A model level command execution system.
 				 * This allows components in an application to state that some work needs to be done,
 				 * but without having to be explicitly coupled to the component that is performing the work.
 				 * No response is allowed from the execution of a command. It's a "fire-and-forget" scenario.
