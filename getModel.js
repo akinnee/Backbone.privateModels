@@ -71,7 +71,11 @@ define(function(require) {
 				 * Any additional model properties that need to be exposed for Backbone to work
 				 */
 				validationError: model.validationError,
-				collection: model.collection
+				collection: model.collection,
+				/**
+				 * For debugging or internal use, don't access these in a production app!
+				 */
+				_model: model
 
 			}, Backbone.Events);
 
