@@ -84,7 +84,8 @@ define(function(require) {
 				/**
 				 * Any additional model properties that need to be exposed for Backbone to work
 				 */
-				validationError: model.validationError
+				validationError: model.validationError,
+				cid: model.cid
 
 			}, Backbone.Events);
 
@@ -110,7 +111,7 @@ define(function(require) {
 		return model.vent;
 	};
 
-	Backbone.privateModels.getCollection = getCollection =function(models, options, CollectionToUse) {
+	Backbone.privateModels.getCollection = getCollection = function(models, options, CollectionToUse) {
 		var Collection, collectionInstance, collectionModels;
 		if (options === null) options = {};
 
@@ -130,13 +131,13 @@ define(function(require) {
 		Collection = CollectionToUse.extend({
 			_prepareModel: function(attrs, options) {
 				var model;
-				if (typeof attrs.execute === 'function') {
-					if (!attrs.collection) attrs.collection = this;
-					return attrs;
-				} else if (attrs instanceof Backbone.Model) {
+				if (attrs instanceof Backbone.Model) {
 					if (!attrs.collection) attrs.collection = this;
 					model = getModel(attrs);
 					return model;
+				} else if (typeof attrs.execute === 'function') {
+					if (!attrs.collection) attrs.collection = this;
+					return attrs;
 				}
 				options = options ? _.clone(options) : {};
 				options.collection = this;
@@ -144,6 +145,18 @@ define(function(require) {
 				if (!model.validationError) return model;
 				this.trigger('invalid', this, model.validationError, options);
 				return false;
+			},
+			get: function(obj) {
+				if (!obj) return void 0;
+				if (obj.id) {
+					this.each(function(model) {
+						if (model.attributes.id === obj.id) return model;
+					});
+				} else if (obj.cid) {
+					this.each(function(model) {
+						if (model.cid === obj.cid) return model;
+					});
+				}
 			}
 		});
 

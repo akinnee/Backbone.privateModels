@@ -8,6 +8,7 @@ define(function(require) {
 		var collectionInstance,
 			collectionInstanceFromModels,
 			collectionInstanceFromPrivateModels,
+			collectionInstanceFromPolymorphic,
 			models,
 			backboneModels,
 			privateModels,
@@ -30,8 +31,6 @@ define(function(require) {
 				Backbone.privateModels.getModel({ name: 'derp3' }, null, Backbone.Model)
 			];
 			collectionInstance = Backbone.privateModels.getCollection(models, null, Backbone.Collection);
-			collectionInstanceFromModels = Backbone.privateModels.getCollection(backboneModels, null, Backbone.Collection);
-			collectionInstanceFromPrivateModels = Backbone.privateModels.getCollection(privateModels, null, Backbone.Collection);
 			privateModelInstance = Backbone.privateModels.getModel({ name: 'derp1' }, null, Backbone.Model);
 		});
 
@@ -51,14 +50,41 @@ define(function(require) {
 		it("creates a collection of private models from an array of objects", function() {
 			expect(collectionInstance.models[0].attributes).toEqual(privateModelInstance.attributes);
 			expect(collectionInstance.models[0].execute).toBeDefined();
+			expect(collectionInstance.models[1].execute).toBeDefined();
+			expect(collectionInstance.models[2].execute).toBeDefined();
+			expect(collectionInstance.models.length).toEqual(models.length);
 		});
 
 		it("creates a collection of private models from an array of vanilla Backbone models", function() {
+			collectionInstanceFromModels = Backbone.privateModels.getCollection(backboneModels, null, Backbone.Collection);
+
 			expect(collectionInstanceFromModels.models[0].attributes).toEqual(privateModelInstance.attributes);
+			expect(collectionInstanceFromModels.models[0].execute).toBeDefined();
+			expect(collectionInstanceFromModels.models[1].execute).toBeDefined();
+			expect(collectionInstanceFromModels.models[2].execute).toBeDefined();
+			expect(collectionInstanceFromModels.models.length).toEqual(backboneModels.length);
 		});
 
 		it("creates a collection of private models from an array of private models", function() {
+			collectionInstanceFromPrivateModels = Backbone.privateModels.getCollection(privateModels, null, Backbone.Collection);
+
 			expect(collectionInstanceFromPrivateModels.models[0].attributes).toEqual(privateModelInstance.attributes);
+			expect(collectionInstanceFromPrivateModels.models[0].execute).toBeDefined();
+			expect(collectionInstanceFromPrivateModels.models[1].execute).toBeDefined();
+			expect(collectionInstanceFromPrivateModels.models[2].execute).toBeDefined();
+			expect(collectionInstanceFromPrivateModels.models.length).toEqual(privateModels.length);
+		});
+
+		it("creates a collection of private models for a polymorphic array", function() {
+			polymorphicModels = [models[0], backboneModels[1], privateModels[2]];
+			collectionInstanceFromPolymorphic = Backbone.privateModels.getCollection(polymorphicModels, null, Backbone.Collection);
+
+			expect(collectionInstanceFromPolymorphic.models[0].execute).toBeDefined();
+			expect(collectionInstanceFromPolymorphic.models[1].execute).toBeDefined();
+			expect(collectionInstanceFromPolymorphic.models[2].execute).toBeDefined();
+			expect(collectionInstanceFromPolymorphic.models[0].attributes).toEqual(collectionInstance.models[0].attributes);
+			expect(collectionInstanceFromPolymorphic.models[1].attributes).toEqual(collectionInstance.models[1].attributes);
+			expect(collectionInstanceFromPolymorphic.models[2].attributes).toEqual(collectionInstance.models[2].attributes);
 		});
 
 	});
