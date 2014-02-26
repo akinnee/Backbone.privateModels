@@ -73,15 +73,6 @@ define(function(require) {
 					model.trigger('action:'+action, options);
 				},
 				/**
-				 * A version of the collection which contains private models
-				 * @type {[type]}
-				 */
-				collection: function() {
-					if (model.collection) {
-						return getCollection(model.collection);
-					}
-				}(),
-				/**
 				 * Any additional model properties that need to be exposed for Backbone to work
 				 */
 				validationError: model.validationError,
@@ -121,7 +112,7 @@ define(function(require) {
 		if (models instanceof Backbone.Collection) {
 			collectionModels = [];
 			collectionInstance = _.clone(models);
-			_(models.models, function(model) {
+			models.each(function(model) {
 				collectionModels.push(getModel(model));
 			});
 			collectionInstance.models = collectionModels;

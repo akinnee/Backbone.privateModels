@@ -6,9 +6,6 @@ define(function(require) {
 	describe("Backbone.privateModels.getCollection", function() {
 
 		var collectionInstance,
-			collectionInstanceFromModels,
-			collectionInstanceFromPrivateModels,
-			collectionInstanceFromPolymorphic,
 			models,
 			backboneModels,
 			privateModels,
@@ -56,7 +53,7 @@ define(function(require) {
 		});
 
 		it("creates a collection of private models from an array of vanilla Backbone models", function() {
-			collectionInstanceFromModels = Backbone.privateModels.getCollection(backboneModels, null, Backbone.Collection);
+			var collectionInstanceFromModels = Backbone.privateModels.getCollection(backboneModels, null, Backbone.Collection);
 
 			expect(collectionInstanceFromModels.models[0].attributes).toEqual(privateModelInstance.attributes);
 			expect(collectionInstanceFromModels.models[0].execute).toBeDefined();
@@ -66,7 +63,7 @@ define(function(require) {
 		});
 
 		it("creates a collection of private models from an array of private models", function() {
-			collectionInstanceFromPrivateModels = Backbone.privateModels.getCollection(privateModels, null, Backbone.Collection);
+			var collectionInstanceFromPrivateModels = Backbone.privateModels.getCollection(privateModels, null, Backbone.Collection);
 
 			expect(collectionInstanceFromPrivateModels.models[0].attributes).toEqual(privateModelInstance.attributes);
 			expect(collectionInstanceFromPrivateModels.models[0].execute).toBeDefined();
@@ -76,8 +73,8 @@ define(function(require) {
 		});
 
 		it("creates a collection of private models for a polymorphic array", function() {
-			polymorphicModels = [models[0], backboneModels[1], privateModels[2]];
-			collectionInstanceFromPolymorphic = Backbone.privateModels.getCollection(polymorphicModels, null, Backbone.Collection);
+			var polymorphicModels = [models[0], backboneModels[1], privateModels[2]];
+			var collectionInstanceFromPolymorphic = Backbone.privateModels.getCollection(polymorphicModels, null, Backbone.Collection);
 
 			expect(collectionInstanceFromPolymorphic.models[0].execute).toBeDefined();
 			expect(collectionInstanceFromPolymorphic.models[1].execute).toBeDefined();
@@ -85,6 +82,16 @@ define(function(require) {
 			expect(collectionInstanceFromPolymorphic.models[0].attributes).toEqual(collectionInstance.models[0].attributes);
 			expect(collectionInstanceFromPolymorphic.models[1].attributes).toEqual(collectionInstance.models[1].attributes);
 			expect(collectionInstanceFromPolymorphic.models[2].attributes).toEqual(collectionInstance.models[2].attributes);
+		});
+
+		it("creates a collection of private models from an existing collection of Backbone models", function() {
+			var existingCollection = new Backbone.Collection(models);
+			var collectionInstanceFromCollection = Backbone.privateModels.getCollection(existingCollection);
+
+			expect(collectionInstanceFromCollection.models[0].execute).toBeDefined();
+			expect(collectionInstanceFromCollection.models[1].execute).toBeDefined();
+			expect(collectionInstanceFromCollection.models[2].execute).toBeDefined();
+			expect(collectionInstanceFromCollection.length).toEqual(existingCollection.length);
 		});
 
 	});
