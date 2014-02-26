@@ -1,7 +1,12 @@
 define(function(require) {
 	'use strict';
 
-	var modelStore = require('modelStore');
+	var Backbone = require('backbone'),
+		getModel,
+		getCollection;
+
+	Backbone.privateModels = {};
+
 
 	/**
 	 * Returns a limited version of the model instance with the ID provided in attrs.
@@ -13,7 +18,7 @@ define(function(require) {
 	 *                              can be a function which returns the model]
 	 * @return {[object]}          [a limited version of the model with the ID provided in attrs]
 	 */
-	var getModel = function(attrs, options, ModelToUse) {
+	Backbone.privateModels.getModel = getModel =function(attrs, options, ModelToUse) {
 
 		var model, id, modelFound;
 		attrs = attrs ? attrs : {};
@@ -26,7 +31,7 @@ define(function(require) {
 			id = model.get('id');
 		} else {
 			id = attrs[ModelToUse.prototype.idAttribute];
-			model = modelFound = modelStore.findByID(id);
+			model = modelFound = Backbone.privateModels.modelStore.findByID(id);
 		}
 
 		/**
@@ -36,7 +41,7 @@ define(function(require) {
 			model = new ModelToUse(attrs, options);
 		}
 		if (!modelFound) {
-			modelStore.add(model);
+			Backbone.privateModels.modelStore.add(model);
 		}
 
 		/**
@@ -68,10 +73,18 @@ define(function(require) {
 					model.trigger('action:'+action, options);
 				},
 				/**
+				 * A version of the collection which contains private models
+				 * @type {[type]}
+				 */
+				collection: function() {
+					if (model.collection) {
+						return getCollection(model.collection);
+					}
+				}(),
+				/**
 				 * Any additional model properties that need to be exposed for Backbone to work
 				 */
-				validationError: model.validationError,
-				collection: model.collection
+				validationError: model.validationError
 
 			}, Backbone.Events);
 
@@ -97,5 +110,69 @@ define(function(require) {
 		return model.vent;
 	};
 
-	return getModel;
+	Backbone.privateModels.getCollection = getCollection =function(models, options, CollectionToUse) {
+		var Collection, collectionInstance, collectionModels;
+		if (options === null) options = {};
+
+		/**
+		 * If we already have a collection, we just want to clone it and convert the models to private models
+		 */
+		if (models instanceof Backbone.Collection) {
+			collectionModels = [];
+			collectionInstance = _.clone(models);
+			_(models.models, function(model) {
+				collectionModels.push(getModel(model));
+			});
+			collectionInstance.models = collectionModels;
+			return collectionInstance;
+		}
+
+		Collection = CollectionToUse.extend({
+			_prepareModel: function(attrs, options) {
+				var model;
+				if (typeof attrs.execute === 'function') {
+					if (!attrs.collection) attrs.collection = this;
+					return attrs;
+				} else if (attrs instanceof Backbone.Model) {
+					if (!attrs.collection) attrs.collection = this;
+					model = getModel(attrs);
+					return model;
+				}
+				options = options ? _.clone(options) : {};
+				options.collection = this;
+				model = getModel(attrs, options, this.model);
+				if (!model.validationError) return model;
+				this.trigger('invalid', this, model.validationError, options);
+				return false;
+			}
+		});
+
+		collectionInstance = new Collection(models, options);
+		return collectionInstance;
+
+	};
+
+	var modelStoreObj = {}, // stores our models by cid
+		modelCIDIndex = {}; // an index of CIDs by actual ID; used by findByID
+
+	/**
+	 * Stores models and retrieves them from the store
+	 * Meant to be used by getModel
+	 */
+	Backbone.privateModels.modelStore = {
+		add: function(model) {
+			modelStoreObj[model.cid] = model;
+			if (model.get('id')) {
+				modelCIDIndex[model.get('id')] = model.cid;
+			}
+		},
+		findByID: function(id) {
+			return modelStoreObj[modelCIDIndex[id]];
+		},
+		findByCID: function(cid) {
+			return modelStoreObj[cid];
+		}
+	};
+
+	return Backbone.privateModels;
 });

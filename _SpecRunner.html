@@ -40,9 +40,7 @@
     "jquery": "tests/vendor/jquery-1.11.0.min",
     "underscore": "tests/vendor/underscore-min",
     "backbone": "tests/vendor/backbone-min",
-    "modelStore": "modelStore",
-    "getModel": "getModel",
-    "getCollection": "getCollection"
+    "backbonePrivateModels": "backbone.privateModels"
   },
   "shim": {
     "underscore": {
@@ -63,15 +61,6 @@
   <script>
     function launchTest() {
     require([
-      
-        
-        'modelStore' ,
-      
-        
-        'getModel' ,
-      
-        
-        'getCollection' 
       
     ],
     function(){

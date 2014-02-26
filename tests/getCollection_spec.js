@@ -1,10 +1,9 @@
 define(function(require) {
 
-	var Backbone = require('backbone'),
-		getCollection = require('getCollection'),
-		getModel = require('getModel');
+	var Backbone = require('backbone');
+	require('backbonePrivateModels');
 
-	describe("getCollection", function() {
+	describe("Backbone.privateModels.getCollection", function() {
 
 		var collectionInstance,
 			collectionInstanceFromModels,
@@ -26,18 +25,18 @@ define(function(require) {
 				new Backbone.Model({ name: 'derp3' })
 			];
 			privateModels = [
-				getModel({ name: 'derp1' }, null, Backbone.Model),
-				getModel({ name: 'derp2' }, null, Backbone.Model),
-				getModel({ name: 'derp3' }, null, Backbone.Model)
+				Backbone.privateModels.getModel({ name: 'derp1' }, null, Backbone.Model),
+				Backbone.privateModels.getModel({ name: 'derp2' }, null, Backbone.Model),
+				Backbone.privateModels.getModel({ name: 'derp3' }, null, Backbone.Model)
 			];
-			collectionInstance = getCollection(models, null, Backbone.Collection);
-			collectionInstanceFromModels = getCollection(backboneModels, null, Backbone.Collection);
-			collectionInstanceFromPrivateModels = getCollection(privateModels, null, Backbone.Collection);
-			privateModelInstance = getModel({ name: 'derp1' }, null, Backbone.Model);
+			collectionInstance = Backbone.privateModels.getCollection(models, null, Backbone.Collection);
+			collectionInstanceFromModels = Backbone.privateModels.getCollection(backboneModels, null, Backbone.Collection);
+			collectionInstanceFromPrivateModels = Backbone.privateModels.getCollection(privateModels, null, Backbone.Collection);
+			privateModelInstance = Backbone.privateModels.getModel({ name: 'derp1' }, null, Backbone.Model);
 		});
 
-		it("exports getCollection", function() {
-			expect(getCollection).toBeDefined();
+		it("defines Backbone.privateModels.getCollection", function() {
+			expect(Backbone.privateModels.getCollection).toBeDefined();
 		});
 
 		it("creates a collection", function() {

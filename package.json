@@ -2,7 +2,7 @@
   "name": "backbone.privateModels",
   "version": "0.0.0",
   "description": "A set of tools for Backbone which helps enforce the fat model, skinny controller (view) pattern.",
-  "main": "getModel.js",
+  "main": "backbone.privateModels.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

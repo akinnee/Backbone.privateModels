@@ -4,14 +4,12 @@ require.config({
   baseUrl: 'http://localhost:8090/',
 
   paths: {
-	// vendor
+    // vendor
     jquery: 'tests/vendor/jquery-1.11.0.min',
     underscore: 'tests/vendor/underscore-min',
     backbone: 'tests/vendor/backbone-min',
-    // components
-    modelStore: 'modelStore',
-    getModel: 'getModel',
-    getCollection: 'getCollection'
+    // plugin
+    backbonePrivateModels: 'backbone.privateModels',
   },
 
   shim: {
