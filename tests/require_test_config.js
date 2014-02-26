@@ -7,7 +7,7 @@ require.config({
     // vendor
     jquery: 'tests/vendor/jquery-1.11.0.min',
     underscore: 'tests/vendor/underscore-min',
-    backbone: 'tests/vendor/backbone-min',
+    backbone: 'tests/vendor/backbone',
     // plugin
     backbonePrivateModels: 'backbone.privateModels',
   },
