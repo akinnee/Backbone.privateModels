@@ -53,13 +53,9 @@ define(function(require) {
 			 */
 			model.vent = _.extend({
 				/**
-				 * a read-only clone of the attribues this model has
+				 * always expose the model attributes
 				 */
-				attributes: _.clone(model.attributes),
-				/**
-				 * a list of actions that can be executed on this model
-				 */
-				availableActions: _.clone(model.availableActions),
+				attributes: model.attributes,
 				/**
 				 * Similar to Marionette.commands
 				 * A model level command execution system.
@@ -81,21 +77,22 @@ define(function(require) {
 			}, Backbone.Events);
 
 			/**
+			 * Expose anything specified in the exposeProperties config property on this model.
+			 * It is NOT recommended that you pass primatives, as they will be passed by value instead of by reference,
+			 * and won't get updated when that property on the model changes.
+			 */
+			if (model.exposeProperties) {
+				_.each(model.exposeProperties, function(property) {
+					model.vent[property] = model[property];
+				});
+			}
+
+			/**
 			 * Retrigger any events that are triggered on this model on the vent object which we return
 			 * This also prevents .trigger from being used on the model
 			 */
 			model.listenTo(model, 'all', function() {
 				model.vent.trigger.apply(model.vent, arguments);
-			});
-
-			/**
-			 * Update our cloned objects when they change
-			 */
-			model.listenTo(model, 'change', function() {
-				model.vent.attributes = _.clone(model.attributes);
-			});
-			model.listenTo(model, 'change:availableActions', function() {
-				model.vent.availableActions = _.clone(model.availableActions);
 			});
 		}
 
