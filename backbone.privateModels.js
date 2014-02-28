@@ -76,6 +76,7 @@ define(function(require) {
 				 */
 				vent.validationError = model.validationError;
 				vent.cid = model.cid;
+				vent.toJSON = model.toJSON;
 
 				/**
 				 * Expose anything specified in the exposeProperties config property on this model.
