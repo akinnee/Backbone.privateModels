@@ -20,7 +20,7 @@ define(function(require) {
 	 */
 	Backbone.privateModels.getModel = getModel =function(attrs, options, ModelToUse) {
 
-		var model, id, modelFound;
+		var model, id, modelFound, vent;
 		attrs = attrs ? attrs : {};
 
 		/**
@@ -51,11 +51,14 @@ define(function(require) {
 			/**
 			 * an object which contains whatever we want to expose to Backbone views
 			 */
-			model.vent = _.extend({
+			model.vent = vent = _.extend({}, Backbone.Events);
+
+			var setUpVent = function(model) {
+
 				/**
 				 * always expose the model attributes
 				 */
-				attributes: model.attributes,
+				vent.attributes = model.attributes;
 				/**
 				 * Similar to Marionette.commands
 				 * A model level command execution system.
@@ -65,38 +68,51 @@ define(function(require) {
 				 * @param  {[string]} action  [the name of the action to execute]
 				 * @param  {[object]} options [options to pass for the action requested]
 				 */
-				execute: function(action, options) {
+				vent.execute = function(action, options) {
 					model.trigger('action:'+action, options);
-				},
+				};
 				/**
 				 * Any additional model properties that need to be exposed for Backbone to work
 				 */
-				validationError: model.validationError,
-				cid: model.cid
+				vent.validationError = model.validationError;
+				vent.cid = model.cid;
 
-			}, Backbone.Events);
+				/**
+				 * Expose anything specified in the exposeProperties config property on this model.
+				 * It is NOT recommended that you pass primatives, as they will be passed by value instead of by reference,
+				 * and won't get updated when that property on the model changes.
+				 */
+				if (model.exposeProperties) {
+					_.each(model.exposeProperties, function(property) {
+						vent[property] = model[property];
+					});
+				}
 
-			/**
-			 * Expose anything specified in the exposeProperties config property on this model.
-			 * It is NOT recommended that you pass primatives, as they will be passed by value instead of by reference,
-			 * and won't get updated when that property on the model changes.
-			 */
-			if (model.exposeProperties) {
-				_.each(model.exposeProperties, function(property) {
-					model.vent[property] = model[property];
+				/**
+				 * Retrigger any events that are triggered on this model on the vent object which we return
+				 * This also prevents .trigger from being used on the model
+				 */
+				vent.listenTo(model, 'all', function() {
+					vent.trigger.apply(vent, arguments);
 				});
-			}
+			};
+			setUpVent(model);
 
 			/**
-			 * Retrigger any events that are triggered on this model on the vent object which we return
-			 * This also prevents .trigger from being used on the model
+			 * Models behind the object getModel returns are hot swappable.
+			 * Because events are bound to the object we return, not the real model, the model can be replaced
+			 * without the views knowing or caring.
+			 *
+			 * Usage:
+			 * var privateModel = Backbone.privateModels.getModel(whatever);
+			 * privateModel.trigger('swapmodel', newModel);
 			 */
-			model.listenTo(model, 'all', function() {
-				model.vent.trigger.apply(model.vent, arguments);
+			vent.listenTo(vent, 'swapmodel', function(newModel) {
+				setUpVent(newModel);
 			});
 		}
 
-		return model.vent;
+		return vent;
 	};
 
 	Backbone.privateModels.getCollection = getCollection = function(models, options, CollectionToUse) {

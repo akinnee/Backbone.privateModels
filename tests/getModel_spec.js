@@ -27,5 +27,25 @@ define(function(require) {
 			expect(privateModel.children.get({ id: 123 }).get('name')).toEqual('Power');
 		});
 
+		it("makes models hot swappable", function() {
+			var privateModel = Backbone.privateModels.getModel(modelInstance);
+
+			// bind events
+			var testing = jasmine.createSpy('testing');
+			privateModel.on('testEvent', testing);
+
+			// swap
+			var newModelInstance = new Backbone.Model({ name: 'Fame' });
+			expect(privateModel.attributes.name).toEqual('Money');
+			modelInstance.trigger('swapmodel', newModelInstance);
+
+			// swap worked
+			expect(privateModel.attributes.name).toEqual('Fame');
+
+			// events still work
+			newModelInstance.trigger('testEvent');
+			expect(testing).toHaveBeenCalled();
+		});
+
 	});
 });
