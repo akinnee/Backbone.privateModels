@@ -59,6 +59,7 @@ define(function(require) {
 				 * always expose the model attributes
 				 */
 				vent.attributes = model.attributes;
+				vent.get = model.get;
 				/**
 				 * Similar to Marionette.commands
 				 * A model level command execution system.
