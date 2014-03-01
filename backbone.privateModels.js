@@ -184,6 +184,9 @@ define(function(require) {
 			if (model.get('id')) {
 				modelCIDIndex[model.get('id')] = model.cid;
 			}
+			model.on('change:id', function() {
+				modelCIDIndex[model.get('id')] = model.cid;
+			});
 		},
 		findByID: function(id) {
 			return modelStoreObj[modelCIDIndex[id]];
