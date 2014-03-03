@@ -86,7 +86,13 @@ define(function(require) {
 				 */
 				if (model.exposeProperties) {
 					_.each(model.exposeProperties, function(property) {
-						vent[property] = model[property];
+						if (model[property]) {
+							vent[property] = model[property];
+						} else {
+							vent.listenTo(model, 'changeProperty:'+ property, function() {
+								vent[property] = model[property];
+							});
+						}
 					});
 				}
 
