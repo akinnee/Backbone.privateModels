@@ -19,7 +19,7 @@ define(function(require) {
 	 *                              can be a function which returns the model]
 	 * @return {[object]}          [a limited version of the model with the ID provided in attrs]
 	 */
-	Backbone.privateModels.getModel = getModel =function(attrs, options, ModelToUse) {
+	Backbone.privateModels.getModel = getModel = function(attrs, options, ModelToUse) {
 
 		var model, id, modelFound, vent;
 		attrs = attrs ? attrs : {};
