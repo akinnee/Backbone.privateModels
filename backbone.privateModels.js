@@ -154,12 +154,19 @@ define(function(require) {
 				options = options ? _.clone(options) : {};
 				options.collection = this;
 				model = getModel(attrs, options, this.model);
+				if (typeof model === 'undefined') {
+					this.trigger('invalid', this, 'model is undefined', options);
+					return false;
+				}
 				if (!model.validationError) return model;
 				this.trigger('invalid', this, model.validationError, options);
 				return false;
 			},
 			get: function(obj) {
 				if (!obj) return void 0;
+				if (typeof obj !== 'object') {
+					obj = { id: obj };
+				}
 				if (obj.id) {
 					this.each(function(model) {
 						if (model.attributes.id === obj.id) return model;
