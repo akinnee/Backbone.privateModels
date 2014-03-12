@@ -1,9 +1,21 @@
-define(function(require) {
+// universal module loader: https://github.com/umdjs
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['backbone', 'underscore'], factory);
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory(require('backbone'), require('underscore'));
+    } else {
+        // Browser globals (root is window)
+        root.returnExports = factory(root.Backbone, root._);
+    }
+}(this, function (Backbone, _) {
 	'use strict';
 
-	var _ = require('underscore');
-	var Backbone = require('backbone'),
-		getModel,
+	var getModel,
 		getCollection;
 
 	Backbone.privateModels = {};
@@ -211,4 +223,4 @@ define(function(require) {
 	};
 
 	return Backbone.privateModels;
-});
+}));
